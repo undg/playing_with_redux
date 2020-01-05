@@ -3,7 +3,7 @@
         "browser",
         "jquery",
         "ecma5",
-        "ecma6",
+        "ecma6"
     ],
     "plugins": {
         "es_modules": {},
