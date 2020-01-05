@@ -2,9 +2,12 @@
 const redux = require('redux')
 const create_store = redux.createStore
 const combine_reducers = redux.combineReducers
+const apply_middleware = redux.applyMiddleware
+const redux_logger = require('redux-logger')
+const logger = redux_logger.createLogger()
 
 // custom helpers
-const {log_info} = require('./helpers.js')
+const {} = require('./helpers.js')
 
 // action.type
 const BUY_CAKE = "BUY_CAKE"
@@ -60,11 +63,9 @@ function cake_reducer(previous_state = initial_cake_state, action) {
     switch(action.type) {
         case BUY_CAKE:
             state.num_of_cakes -= action.amount
-            log_info(action)
             break
         case RESUPPLY_CAKE:
             state.num_of_cakes += action.amount
-            log_info(action)
             break
     }
     return state
@@ -75,7 +76,6 @@ function icecream_reducer(previous_state = initial_icecream_state, action) {
     switch(action.type) {
         case BUY_ICECREAM:
             state.num_of_icecream -= action.amount
-            log_info(action)
             break
     }
     return state
@@ -86,11 +86,11 @@ const root_reducer = combine_reducers({
     cake: cake_reducer,
     ice: icecream_reducer,
 })
-const store = create_store(root_reducer)
+const store = create_store(root_reducer, apply_middleware(logger))
 
 console.log('Initial(prev) state:', store.getState(), "\r\n")
 
-const unsubscribe = store.subscribe(()=>console.log('Update:', store.getState(), "\r\n"))
+const unsubscribe = store.subscribe(()=>{})
 
 store.dispatch(buy_cake(1))
 store.dispatch(buy_1_cake)
