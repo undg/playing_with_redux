@@ -1,10 +1,12 @@
 #!/bin/env node
 const redux = require('redux')
 const create_store = redux.createStore
+const combine_reducers = redux.combineReducers
 
+// custom helpers
 const {log_info} = require('./helpers.js')
 
-// ACTION
+// action.type
 const BUY_CAKE = "BUY_CAKE"
 const RESUPPLY_CAKE = "RESUPPLY_CAKE"
 
@@ -40,9 +42,12 @@ function buy_icecream(amount) {
     }
 }
 
-// STATE 
-const initial_state = {
+// STATE
+const initial_cake_state = {
     num_of_cakes: 10,
+}
+
+const initial_icecream_state = {
     num_of_icecream: 20,
 }
 
@@ -50,31 +55,45 @@ const initial_state = {
 // boilerplate
 // (previous_state = initial_state, action) => new_state
 
-function reducer(previous_state = initial_state, action) {
+function cake_reducer(previous_state = initial_cake_state, action) {
     const state = { ...previous_state }
     switch(action.type) {
         case BUY_CAKE:
             state.num_of_cakes -= action.amount
+            log_info(action)
             break
         case RESUPPLY_CAKE:
             state.num_of_cakes += action.amount
-            break
-        case BUY_ICECREAM:
-            state.num_of_icecream -= action.amount
+            log_info(action)
             break
     }
-    log_info(action)
+    return state
+}
+
+function icecream_reducer(previous_state = initial_icecream_state, action) {
+    const state = { ...previous_state }
+    switch(action.type) {
+        case BUY_ICECREAM:
+            state.num_of_icecream -= action.amount
+            log_info(action)
+            break
+    }
     return state
 }
 
 // USAGE
-const store = create_store(reducer)
+const root_reducer = combine_reducers({
+    cake: cake_reducer,
+    ice: icecream_reducer,
+})
+const store = create_store(root_reducer)
 
 console.log('Initial(prev) state:', store.getState(), "\r\n")
+
 const unsubscribe = store.subscribe(()=>console.log('Update:', store.getState(), "\r\n"))
+
 store.dispatch(buy_cake(1))
 store.dispatch(buy_1_cake)
-store.dispatch(buy_cake(1))
 store.dispatch(resupply_cake(5))
 store.dispatch(buy_cake(6))
 store.dispatch(buy_icecream(9))
