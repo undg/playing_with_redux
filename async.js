@@ -2,11 +2,20 @@
 const redux = require('redux')
 const create_store = redux.createStore
 
+const apply_middleware = redux.applyMiddleware
+const thunk_middleware = require('redux-thunk').default
+const axios = require('axios')
+
+const redux_logger = require('redux-logger')
+const logger = redux_logger.createLogger()
+
+const URL = 'https://jsonplaceholder.typicode.com/users'
+
 // STATE
 const initial_state = {
     loading: false,
     users: [],
-    error: ","
+    error: "",
 }
 
 // ACTION.type
@@ -51,4 +60,18 @@ const reducer = (state, action) => {
     }
 }
 
-const store = create_store(reducer)
+const fetch_users = () => dispatch => {
+    dispatch(fetch_user_request())
+    axios.get(URL)
+        .then( response => {
+            const user_name = response.data.map(user=>user.name)
+            dispatch(fetch_user_success(user_name))
+        })
+        .catch( error => dispatch(fetch_user_failure(error.message)) )
+}
+
+const store = create_store(reducer, apply_middleware(thunk_middleware, logger))
+
+const unsubscribe = store.subscribe(()=>{})
+store.dispatch(fetch_users())
+unsubscribe()
