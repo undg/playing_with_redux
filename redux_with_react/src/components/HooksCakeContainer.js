@@ -5,13 +5,13 @@ import { buy_cake, delivery_cake } from '../redux'
 function CakeContainer(props) {
     return (
         <div>
-            <h2>Number of cakes: {props.num_of_cakes}</h2>
+            <h2>Number of hook cakes: {props.num_of_cakes}</h2>
             <button
                 onClick={props.buy_cake}
-            >Buy cake</button>
+            >Buy hook cake</button>
             <button
                 onClick={props.delivery_cake}
-            >Delivery cakes</button>
+            >Delivery hook cakes</button>
         </div>
     )
 }
